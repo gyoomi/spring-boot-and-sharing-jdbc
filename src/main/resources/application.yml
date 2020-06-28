@@ -1,0 +1,27 @@
+sharding:
+  jdbc:
+    datasource:
+      names: db0
+    db0:
+      type: com.zaxxer.hikari.HikariDataSource
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://localhost:3306/db0?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+      username: root
+      password: root
+    config:
+      sharding:
+        props:
+          sql.show: true
+        tables:
+          t_user:
+            key-generator-column-name: id
+            actual-data-nodes: db0.t_user_${0..4}    #数据节点,均匀分布
+            table-strategy:
+              inline:
+                sharding-column: id
+                algorithm-expression: t_user_${id % 5}  #按模运算分配
+spring:
+  main:
+    allow-bean-definition-overriding: true
+
+
